@@ -6,7 +6,7 @@
         html, body {
             margin: 0;
             padding: 0;
-            background-color: transparent; /* Fondo transparente */
+            background: none; /* Elimina cualquier fondo */
         }
 
         #marcador {
@@ -14,8 +14,10 @@
             font-size: 24px;
             padding: 10px;
             border: 2px solid #000;
-            background-color: white; /* Solo el marcador con fondo blanco */
+            background-color: white; /* Fondo blanco solo para el marcador */
             display: inline-block;
+            float: right; /* Alineación a la derecha */
+            text-align: right; /* Asegura que el texto también esté alineado */
         }
     </style>
 </head>
