@@ -10,7 +10,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f4f4f4;
+            background-color: #00ff00; /* Fondo verde para el croma */
         }
     </style>
 </head>
@@ -18,13 +18,19 @@
     <span>🏆 Ganados: <span id="ganados">0</span> | ❌ Perdidos: <span id="perdidos">0</span></span>
 
     <script>
-        // Obtener datos del servidor
-        fetch("http://krantor.webcindario.com/datos.php")
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("ganados").innerText = data.ganados;
-                document.getElementById("perdidos").innerText = data.perdidos;
-            });
+        function actualizarMarcador() {
+            fetch("http://krantor.webcindario.com/datos.php")
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("ganados").innerText = data.ganados;
+                    document.getElementById("perdidos").innerText = data.perdidos;
+                })
+                .catch(error => console.error("Error al obtener datos:", error));
+        }
+
+        // Actualizar el marcador cada 5 segundos
+        setInterval(actualizarMarcador, 5000);
+        actualizarMarcador(); // Primera actualización inmediata
     </script>
 </body>
 </html>
