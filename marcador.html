@@ -1,1 +1,43 @@
-gfhgfmhgk
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff; /* Fondo blanco */
+        }
+
+        #marcador {
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            padding: 10px;
+            border: 2px solid #000;
+            background-color: #ffffff; /* Fondo blanco */
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div id="marcador">
+        🏆 Ganados: <span id="ganados">0</span> | ❌ Perdidos: <span id="perdidos">0</span>
+    </div>
+
+    <script>
+        function actualizarMarcador() {
+            fetch("https://krantor.webcindario.com/datos.php")
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("ganados").innerText = data.ganados;
+                    document.getElementById("perdidos").innerText = data.perdidos;
+                })
+                .catch(error => console.error("Error al obtener datos:", error));
+        }
+
+        // Actualización cada 5 segundos
+        setInterval(actualizarMarcador, 5000);
+        actualizarMarcador(); // Primera actualización inmediata
+    </script>
+</body>
+</html>
