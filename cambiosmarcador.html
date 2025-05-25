@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cambiar Marcador</title>
+</head>
+<body>
+    <h1>Cambiar Marcador</h1>
+    <label>Ganados: <input type="number" id="nuevoGanados" value="0"></label><br>
+    <label>Perdidos: <input type="number" id="nuevoPerdidos" value="0"></label><br>
+    <button onclick="actualizarMarcador()">Actualizar</button>
+
+    <script>
+        function actualizarMarcador() {
+            let datos = {
+                ganados: document.getElementById("nuevoGanados").value,
+                perdidos: document.getElementById("nuevoPerdidos").value
+            };
+
+            // Enviar datos al servidor
+            fetch("https://krantor.webcindario.com/datos.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(datos)
+            })
+            .then(response => response.json())
+            .then(data => alert(data.mensaje));
+        }
+    </script>
+</body>
+</html>
