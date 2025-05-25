@@ -19,7 +19,7 @@
 
     <script>
         function actualizarMarcador() {
-            fetch("http://krantor.webcindario.com/datos.php")
+            fetch("https://krantor.webcindario.com/datos.php")
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById("ganados").innerText = data.ganados;
@@ -28,7 +28,7 @@
                 .catch(error => console.error("Error al obtener datos:", error));
         }
 
-        // Actualizar el marcador cada 5 segundos
+        // Actualizar cada 5 segundos
         setInterval(actualizarMarcador, 5000);
         actualizarMarcador(); // Primera actualización inmediata
     </script>
