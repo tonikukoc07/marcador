@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 
         html, body {
             margin: 0;
@@ -11,56 +11,29 @@
             background: none;
         }
 
-        #marcador-container {
-            text-align: right;
+        #marcador {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 28px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 3px solid gold;
+            background: linear-gradient(to right, #0f5132, #8b0000); /* Verde y rojo */
+            color: white;
             display: inline-block;
             float: right;
-        }
-
-        #titulo {
-            font-family: "Poppins", sans-serif;
-            font-size: 26px;
-            font-weight: bold;
-            color: #ff4500;
-            text-shadow: 2px 2px 6px rgba(255, 69, 0, 0.5);
-            margin-bottom: 5px; /* Pegado al marcador */
-        }
-
-        #marcador {
-            font-family: "Arial Black", Arial, sans-serif;
-            font-size: 26px;
-            padding: 15px 20px;
-            border: 3px solid #000;
-            background: linear-gradient(135deg, #f8f8f8, #dcdcdc);
-            border-radius: 15px;
-            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
-            color: #333;
-            display: inline-block;
             text-align: right;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
         }
 
-        span {
+        #marcador span {
             font-weight: bold;
-            color: #ff4500;
-            text-shadow: 1px 1px 4px rgba(255, 69, 0, 0.6);
-        }
-
-        /* Nuevos íconos */
-        .icon {
-            width: 24px;
-            height: 24px;
-            vertical-align: middle;
-            margin-right: 8px;
         }
     </style>
 </head>
 <body>
-    <div id="marcador-container">
-        <div id="titulo">Marcador Fut Champions</div>
-        <div id="marcador">
-            <img class="icon" src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" alt="Ganados"> Ganados: <span id="ganados">0</span> |
-            <img class="icon" src="https://cdn-icons-png.flaticon.com/512/1828/1828843.png" alt="Perdidos"> Perdidos: <span id="perdidos">0</span>
-        </div>
+    <div id="marcador">
+        <img src="escudo.png" alt="FUT Champions" style="height: 40px; vertical-align: middle;">
+        🏆 Ganados: <span id="ganados">0</span> | ❌ Perdidos: <span id="perdidos">0</span>
     </div>
 
     <script>
