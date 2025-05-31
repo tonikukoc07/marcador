@@ -3,38 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-
         html, body {
             margin: 0;
             padding: 0;
             background: none;
         }
 
-        #marcador {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 28px;
-            padding: 15px;
-            border-radius: 10px;
-            border: 3px solid gold;
-            background: linear-gradient(to right, #0f5132, #8b0000); /* Verde y rojo */
-            color: white;
-            display: inline-block;
-            float: right;
-            text-align: right;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+        body {
+            background-image: url('tu-imagen.png'); /* Usa la imagen que editamos */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
-        #marcador span {
+        #ganados, #perdidos {
+            font-family: Arial, sans-serif;
+            font-size: 30px;
             font-weight: bold;
+            color: white;
+            position: absolute;
+        }
+
+        #ganados {
+            top: 100px; /* Ajusta según la posición en la imagen */
+            left: 150px;
+        }
+
+        #perdidos {
+            top: 200px; /* Ajusta según la posición en la imagen */
+            left: 150px;
         }
     </style>
 </head>
 <body>
-    <div id="marcador">
-        <img src="escudo.png" alt="FUT Champions" style="height: 40px; vertical-align: middle;">
-        🏆 Ganados: <span id="ganados">0</span> | ❌ Perdidos: <span id="perdidos">0</span>
-    </div>
+
+    <span id="ganados"></span>
+    <span id="perdidos"></span>
 
     <script>
         function actualizarMarcador() {
@@ -50,5 +54,6 @@
         setInterval(actualizarMarcador, 5000);
         actualizarMarcador();
     </script>
+
 </body>
 </html>
