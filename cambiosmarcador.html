@@ -1,121 +1,49 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Cambiar Marcador</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 16px; }
-    label { display:block; margin: 10px 0; }
-    input { width: 120px; padding: 6px; font-size: 16px; }
-    button { padding: 8px 12px; font-size: 16px; margin-right: 8px; cursor:pointer; }
-    pre { background:#f3f3f3; padding:10px; border-radius:8px; overflow:auto; }
-    .ok { color: green; }
-    .bad { color: #b00020; }
-  </style>
+<meta charset="UTF-8">
+<title>Cambiar Marcador</title>
 </head>
 <body>
-  <h1>Cambiar Marcador</h1>
 
-  <label>Ganados:
-    <input type="number" id="nuevoGanados" value="0" min="0">
-  </label>
+<h1>Cambiar Marcador</h1>
 
-  <label>Perdidos:
-    <input type="number" id="nuevoPerdidos" value="0" min="0">
-  </label>
+<label>Ganados:
+  <input type="number" id="g" value="0">
+</label><br>
 
-  <button onclick="guardarPOST()">Guardar (POST)</button>
-  <button onclick="guardarGET()">Guardar (GET)</button>
-  <button onclick="leer()">Leer marcador</button>
+<label>Perdidos:
+  <input type="number" id="p" value="0">
+</label><br>
 
-  <p id="estado"></p>
-  <pre id="log"></pre>
+<button onclick="guardar()">Actualizar</button>
 
-  <script>
-    const URL_DATOS   = "https://krantor.rf.gd/Marcador/datos.php";
-    const URL_GUARDAR = "https://krantor.rf.gd/Marcador/guardar.php";
+<p id="estado"></p>
 
-    function v(id){ return document.getElementById(id).value; }
-    function setEstado(msg, ok=true){
-      const el = document.getElementById("estado");
-      el.className = ok ? "ok" : "bad";
-      el.textContent = msg;
-    }
-    function log(obj){
-      document.getElementById("log").textContent =
-        (typeof obj === "string") ? obj : JSON.stringify(obj, null, 2);
-    }
+<script>
+function guardar() {
+  const g = document.getElementById("g").value;
+  const p = document.getElementById("p").value;
 
-    async function leer(){
-      try{
-        setEstado("Leyendo...", true);
-        const r = await fetch(URL_DATOS + "?_=" + Date.now(), { cache:"no-store" });
-        const d = await r.json();
-        document.getElementById("nuevoGanados").value = d.ganados ?? 0;
-        document.getElementById("nuevoPerdidos").value = d.perdidos ?? 0;
-        setEstado("Leído ✅ " + d.ganados + " / " + d.perdidos, true);
-        log(d);
-      }catch(e){
-        setEstado("Error leyendo: " + e.message, false);
-        log(String(e));
-      }
-    }
+  const url =
+    "https://krantor.rf.gd/Marcador/guardar.php" +
+    "?ganados=" + encodeURIComponent(g) +
+    "&perdidos=" + encodeURIComponent(p) +
+    "&_=" + Date.now(); // anti-caché
 
-    async function guardarPOST(){
-      const datos = { ganados: v("nuevoGanados"), perdidos: v("nuevoPerdidos") };
-      log({ enviando: datos, modo: "POST", url: URL_GUARDAR });
+  const img = new Image();
+  img.onload = () => {
+    document.getElementById("estado").textContent =
+      "✅ Guardado: " + g + " / " + p;
+  };
+  img.onerror = () => {
+    document.getElementById("estado").textContent =
+      "❌ Error al guardar";
+  };
 
-      try{
-        setEstado("Guardando por POST...", true);
-        const r = await fetch(URL_GUARDAR + "?_=" + Date.now(), {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(datos)
-        });
+  img.src = url;
+}
+</script>
 
-        const texto = await r.text(); // para ver aunque no sea JSON
-        let resp;
-        try { resp = JSON.parse(texto); } catch { resp = { raw: texto }; }
-
-        if (resp.ok){
-          setEstado("Guardado ✅ " + resp.data.ganados + " / " + resp.data.perdidos, true);
-        } else {
-          setEstado("No guardado ❌ (mira el log)", false);
-        }
-        log(resp);
-
-      }catch(e){
-        setEstado("Error POST: " + e.message, false);
-        log(String(e));
-      }
-    }
-
-    async function guardarGET(){
-      const g = encodeURIComponent(v("nuevoGanados"));
-      const p = encodeURIComponent(v("nuevoPerdidos"));
-
-      const url = URL_GUARDAR + "?ganados=" + g + "&perdidos=" + p + "&_=" + Date.now();
-      log({ enviando: {ganados:g, perdidos:p}, modo:"GET", url });
-
-      try{
-        setEstado("Guardando por GET...", true);
-        const r = await fetch(url, { cache:"no-store" });
-        const resp = await r.json();
-
-        if (resp.ok){
-          setEstado("Guardado ✅ " + resp.data.ganados + " / " + resp.data.perdidos, true);
-        } else {
-          setEstado("No guardado ❌ " + (resp.error || "desconocido"), false);
-        }
-        log(resp);
-      }catch(e){
-        setEstado("Error GET: " + e.message, false);
-        log(String(e));
-      }
-    }
-
-    // Cargar valores actuales al abrir
-    leer();
-  </script>
 </body>
 </html>
