@@ -1,44 +1,86 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Test Marcador</title>
+  <meta charset="UTF-8" />
+  <title>Cambiar Marcador</title>
   <style>
-    body { font-family: Arial; padding: 16px; }
-    input { width: 80px; font-size: 18px; }
-    button { font-size: 18px; padding: 8px 12px; margin-top: 10px; }
-    #t { margin-top: 12px; font-family: monospace; }
+    body { font-family: Arial, sans-serif; padding: 16px; }
+    label { display:block; margin: 10px 0; }
+    input { width: 140px; padding: 6px; font-size: 16px; }
+    button { padding: 10px 14px; font-size: 16px; margin-right: 8px; cursor:pointer; }
+    #estado { margin-top: 12px; font-family: monospace; }
+    .ok { color: #0a7a0a; }
+    .bad { color: #b00020; }
   </style>
 </head>
 <body>
-  <h1>Test Marcador</h1>
+  <h1>Cambiar Marcador</h1>
 
-  Ganados: <input id="g" type="number" value="10"><br><br>
-  Perdidos: <input id="p" type="number" value="2"><br><br>
+  <label>Ganados:
+    <input type="number" id="g" value="0" min="0">
+  </label>
 
-  <button onclick="go()">GUARDAR (TEST)</button>
+  <label>Perdidos:
+    <input type="number" id="p" value="0" min="0">
+  </label>
 
-  <div id="t">Estado: esperando…</div>
+  <button onclick="guardar()">Guardar</button>
+  <button onclick="leer()">Leer marcador</button>
+
+  <div id="estado"></div>
 
   <script>
-    function go(){
+    const URL_DATOS   = "https://krantor.rf.gd/Marcador/datos.php";     // JSONP
+    const URL_GUARDAR = "https://krantor.rf.gd/Marcador/guardar.php";   // GIF 1x1
+
+    function setEstado(msg, ok=true){
+      const el = document.getElementById("estado");
+      el.className = ok ? "ok" : "bad";
+      el.textContent = msg;
+    }
+
+    // Callback global JSONP
+    window.onMarcador = function(data){
+      document.getElementById("g").value = data.ganados ?? 0;
+      document.getElementById("p").value = data.perdidos ?? 0;
+      setEstado("✅ Leído: " + (data.ganados ?? "?") + " / " + (data.perdidos ?? "?"), true);
+    };
+
+    function leer(){
+      setEstado("Leyendo...", true);
+      const old = document.getElementById("jsonp");
+      if (old) old.remove();
+
+      const s = document.createElement("script");
+      s.id = "jsonp";
+      s.src = URL_DATOS + "?callback=onMarcador&_=" + Date.now();
+      s.onerror = () => setEstado("❌ Error leyendo (JSONP no carga)", false);
+      document.body.appendChild(s);
+    }
+
+    function guardar(){
       const g = document.getElementById("g").value;
       const p = document.getElementById("p").value;
 
-      const guardar = "https://krantor.rf.gd/Marcador/guardar.php?ganados=" + encodeURIComponent(g) +
-                      "&perdidos=" + encodeURIComponent(p) +
-                      "&_=" + Date.now();
+      setEstado("Guardando...", true);
 
-      document.getElementById("t").textContent = "Estado: ejecutado ✅ URL: " + guardar;
+      const url = URL_GUARDAR
+        + "?ganados=" + encodeURIComponent(g)
+        + "&perdidos=" + encodeURIComponent(p)
+        + "&_=" + Date.now();
 
-      // abre guardar.php (para forzar la llamada sin CORS)
-      window.open(guardar, "_blank");
+      const img = new Image();
+      img.onload = () => {
+        setEstado("✅ Guardado: " + g + " / " + p, true);
+        setTimeout(leer, 300); // confirmar leyendo
+      };
+      img.onerror = () => setEstado("❌ Error al guardar (pixel no cargó)", false);
 
-      // al segundo abre datos.php para comprobar el cambio
-      setTimeout(() => {
-        window.open("https://krantor.rf.gd/Marcador/datos.php?_=" + Date.now(), "_blank");
-      }, 1000);
+      img.src = url;
     }
+
+    // Cargar al abrir
+    leer();
   </script>
 </body>
 </html>
