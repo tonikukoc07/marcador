@@ -1,33 +1,39 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Cambiar Marcador</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 16px; }
-    label { display: block; margin: 10px 0; }
-    input { width: 120px; font-size: 16px; padding: 6px; }
-    button { font-size: 16px; padding: 8px 14px; cursor: pointer; }
-    #estado { margin-top: 12px; font-family: monospace; }
-  </style>
 </head>
 <body>
   <h1>Cambiar Marcador</h1>
 
-  <label>
-    Ganados:
-    <input type="number" id="nuevoGanados" value="0" min="0" />
-  </label>
+  <label>Ganados: <input type="number" id="nuevoGanados" value="0"></label><br>
+  <label>Perdidos: <input type="number" id="nuevoPerdidos" value="0"></label><br>
 
-  <label>
-    Perdidos:
-    <input type="number" id="nuevoPerdidos" value="0" min="0" />
-  </label>
-
-  <button onclick="guardar()">Actualizar</button>
-  <button onclick="cargar()">Recargar valores</button>
-
-  <div id="estado"></div>
+  <button onclick="actualizarMarcador()">Actualizar</button>
 
   <script>
-    const URL_DATOS   = "https://krantor.rf.gd/M_
+    function actualizarMarcador() {
+      const datos = {
+        ganados: document.getElementById("nuevoGanados").value,
+        perdidos: document.getElementById("nuevoPerdidos").value
+      };
+
+      fetch("https://krantor.rf.gd/Marcador/guardar.php?_=" + Date.now(), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos)
+      })
+      .then(r => r.json())
+      .then(resp => {
+        if (resp.ok) alert("Guardado ✅ " + resp.data.ganados + " / " + resp.data.perdidos);
+        else alert("Error ❌ " + (resp.error || "desconocido"));
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Error de red: " + err.message);
+      });
+    }
+  </script>
+</body>
+</html>
