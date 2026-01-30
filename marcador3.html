@@ -10,7 +10,7 @@
 
     <script>
         function actualizarMarcador() {
-            fetch("https://krantor.webcindario.com/datos.php")
+            fetch("https://krantor.rf.gd/Marcador/datos.php")
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById("ganados").innerText = data.ganados;
