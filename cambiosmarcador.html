@@ -1,32 +1,33 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Cambiar Marcador</title>
+  <meta charset="UTF-8" />
+  <title>Cambiar Marcador</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 16px; }
+    label { display: block; margin: 10px 0; }
+    input { width: 120px; font-size: 16px; padding: 6px; }
+    button { font-size: 16px; padding: 8px 14px; cursor: pointer; }
+    #estado { margin-top: 12px; font-family: monospace; }
+  </style>
 </head>
 <body>
-    <h1>Cambiar Marcador</h1>
-    <label>Ganados: <input type="number" id="nuevoGanados" value="0"></label><br>
-    <label>Perdidos: <input type="number" id="nuevoPerdidos" value="0"></label><br>
-    <button onclick="actualizarMarcador()">Actualizar</button>
+  <h1>Cambiar Marcador</h1>
 
-    <script>
-        function actualizarMarcador() {
-            let datos = {
-                ganados: document.getElementById("nuevoGanados").value,
-                perdidos: document.getElementById("nuevoPerdidos").value
-            };
+  <label>
+    Ganados:
+    <input type="number" id="nuevoGanados" value="0" min="0" />
+  </label>
 
-            fetch("https://krantor.rf.gd/Marcador/datos.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(datos)
-            })
-            .then(response => response.json())
-            .then(data => alert(data.mensaje))
-            .catch(error => console.error("Error al actualizar marcador:", error));
-        }
-    </script>
-</body>
-</html>
+  <label>
+    Perdidos:
+    <input type="number" id="nuevoPerdidos" value="0" min="0" />
+  </label>
 
+  <button onclick="guardar()">Actualizar</button>
+  <button onclick="cargar()">Recargar valores</button>
+
+  <div id="estado"></div>
+
+  <script>
+    const URL_DATOS   = "https://krantor.rf.gd/M_
