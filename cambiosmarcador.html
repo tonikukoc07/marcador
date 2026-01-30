@@ -1,49 +1,53 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Cambiar Marcador</title>
+  <meta charset="UTF-8" />
+  <title>Cambiar Marcador</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 16px; }
+    label { display:block; margin: 10px 0; }
+    input { width: 120px; padding: 6px; font-size: 16px; }
+    button { padding: 10px 14px; font-size: 16px; margin-right: 8px; cursor:pointer; }
+    #estado { margin-top: 12px; font-family: monospace; }
+    .ok { color: #0a7a0a; }
+    .bad { color: #b00020; }
+  </style>
 </head>
 <body>
+  <h1>Cambiar Marcador</h1>
 
-<h1>Cambiar Marcador</h1>
+  <label>Ganados:
+    <input type="number" id="g" value="0" min="0">
+  </label>
 
-<label>Ganados:
-  <input type="number" id="g" value="0">
-</label><br>
+  <label>Perdidos:
+    <input type="number" id="p" value="0" min="0">
+  </label>
 
-<label>Perdidos:
-  <input type="number" id="p" value="0">
-</label><br>
+  <button onclick="guardar()">Guardar</button>
+  <button onclick="leer()">Leer marcador</button>
 
-<button onclick="guardar()">Actualizar</button>
+  <div id="estado"></div>
 
-<p id="estado"></p>
+  <script>
+    const URL_DATOS   = "https://krantor.rf.gd/Marcador/datos.php";   // JSONP
+    const URL_GUARDAR = "https://krantor.rf.gd/Marcador/guardar.php"; // GET por imagen
 
-<script>
-function guardar() {
-  const g = document.getElementById("g").value;
-  const p = document.getElementById("p").value;
+    function setEstado(msg, ok=true){
+      const el = document.getElementById("estado");
+      el.className = ok ? "ok" : "bad";
+      el.textContent = msg;
+    }
 
-  const url =
-    "https://krantor.rf.gd/Marcador/guardar.php" +
-    "?ganados=" + encodeURIComponent(g) +
-    "&perdidos=" + encodeURIComponent(p) +
-    "&_=" + Date.now(); // anti-caché
+    // ✅ LECTURA SIN CORS: JSONP
+    // datos.php?callback=onMarcador
+    function onMarcador(data) {
+      document.getElementById("g").value = data.ganados ?? 0;
+      document.getElementById("p").value = data.perdidos ?? 0;
+      setEstado("✅ Leído: " + (data.ganados ?? "?") + " / " + (data.perdidos ?? "?") + " (" + new Date().toLocaleTimeString() + ")", true);
+    }
 
-  const img = new Image();
-  img.onload = () => {
-    document.getElementById("estado").textContent =
-      "✅ Guardado: " + g + " / " + p;
-  };
-  img.onerror = () => {
-    document.getElementById("estado").textContent =
-      "❌ Error al guardar";
-  };
+    function leer() {
+      setEstado("Leyendo...", true);
 
-  img.src = url;
-}
-</script>
-
-</body>
-</html>
+      // borra el
