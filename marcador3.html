@@ -1,17 +1,54 @@
-<script>
-function actualizarMarcador() {
-  fetch("https://krantor.rf.gd/Marcador/datos.php", { cache: "no-store" })
-    .then(r => {
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      return r.json();
-    })
-    .then(d => {
-      document.getElementById("ganados").textContent = d.ganados ?? "";
-      document.getElementById("perdidos").textContent = d.perdidos ?? "";
-    })
-    .catch(e => console.error("Marcador error:", e));
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { margin: 0; background: transparent; }
+    .num {
+      color: white;
+      display: block;
+      font-size: 80px;
+      text-align: right;
+      font-family: Arial, sans-serif;
+      /* Esto hace que se vea sobre fondo blanco o claro */
+      text-shadow:
+        -2px -2px 0 #000,
+         2px -2px 0 #000,
+        -2px  2px 0 #000,
+         2px  2px 0 #000,
+         0px  0px 8px #000;
+    }
+    /* Debug pequeño opcional */
+    #debug { color: #000; font-size: 14px; font-family: monospace; }
+  </style>
+</head>
+<body>
 
-actualizarMarcador();
-setInterval(actualizarMarcador, 5000);
-</script>
+  <span id="ganados" class="num">--</span>
+  <span id="perdidos" class="num">--</span>
+  <div id="debug"></div>
+
+  <script>
+    async function actualizarMarcador() {
+      try {
+        const r = await fetch("https://krantor.rf.gd/Marcador/datos.php", { cache: "no-store" });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const data = await r.json();
+
+        document.getElementById("ganados").textContent = data.ganados ?? "";
+        document.getElementById("perdidos").textContent = data.perdidos ?? "";
+
+        // debug visible en la página (por si la consola no te muestra nada)
+        document.getElementById("debug").textContent =
+          "OK: " + JSON.stringify(data) + " (" + new Date().toLocaleTimeString() + ")";
+      } catch (e) {
+        document.getElementById("debug").textContent = "ERROR: " + e.message;
+      }
+    }
+
+    actualizarMarcador();
+    setInterval(actualizarMarcador, 5000);
+  </script>
+
+</body>
+</html>
