@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cambiar Marcador</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 16px; }
+    label { display:block; margin: 10px 0; }
+    input { width: 140px; padding: 6px; font-size: 16px; }
+    button { padding: 10px 14px; font-size: 16px; margin-right: 8px; cursor:pointer; }
+    #estado { margin-top: 12px; font-family: monospace; }
+    #debug { margin-top: 8px; font-family: monospace; font-size: 12px; color:#444; word-break:break-all; }
+    .ok { color: #0a7a0a; }
+    .bad { color: #b00020; }
+  </style>
+</head>
+<body>
+  <h1>Cambiar Marcador</h1>
+
+  <label>Ganados:
+    <input type="number" id="g" value="0" min="0">
+  </label>
+
+  <label>Perdidos:
+    <input type="number" id="p" value="0" min="0">
+  </label>
+
+  <button onclick="guardar()">Guardar</button>
+  <button onclick="leer()">Leer marcador</button>
+
+  <div id="estado"></div>
+  <div id="debug"></div>
+
+  <script>
+    const URL_DATOS   = "https://krantor.rf.gd/Marcador/datos.php";
+    const URL_GUARDAR = "https://krantor.rf.gd/Marcador/guardar.php";
+
+    function setEstado(msg, ok=true){
+      const el = document.getElementById("estado");
+      el.className = ok ? "ok" : "bad";
+      el.textContent = msg;
+    }
+    function setDebug(msg){
+      document.getElementById("debug").textContent = msg;
+    }
+
+    // ✅ callback GLOBAL (clave)
+    window.onMarcador = function(data){
+      document.getElementById("g").value = data.ganados ?? 0;
+      document.getElementById("p").value = data.perdidos ?? 0;
+      setEstado("✅ Leído: " + (data.ganados ?? "?") + " / " + (data.perdidos ?? "?"), true);
+    };
+
+    function leer(){
+      setEstado("Leyendo...", true);
+
+      // borrar script anterior
+      const old = document.getElementById("jsonp");
+      if (old) old.remove();
+
+      const url = URL_DATOS + "?callback=onMarcador&_=" + Date.now();
+      setDebug("JSONP: " + url);
+
+      // Si en 2s no llegó callback -> error visible
+      let timeout = setTimeout(() => {
+        setEstado("❌ Error leyendo (timeout JSONP)", false);
+      }, 2000);
+
+      // envolvemos callback para quitar timeout
+      const prevCb = window.onMarcador;
+      window.onMarcador = function(data){
+        clearTimeout(timeout);
+        prevCb(data);
+      };
+
+      const s = document.createElement("script");
+      s.id = "jsonp";
+      s.src = url;
+      s.onerror = () => {
+        clearTimeout(timeout);
+        setEstado("❌ Error leyendo (script no carga)", false);
+      };
+      document.body.appendChild(s);
+    }
+
+    function guardar(){
+      const g = document.getElementById("g").value;
+      const p = document.getElementById("p").value;
+
+      setEstado("Guardando...", true);
+
+      const url = URL_GUARDAR
+        + "?ganados=" + encodeURIComponent(g)
+        + "&perdidos=" + encodeURIComponent(p)
+        + "&_=" + Date.now();
+
+      setDebug("GUARDAR: " + url);
+
+      // iframe oculto (no lo bloquean como pixel)
+      const old = document.getElementById("ifr_guardar");
+      if (old) old.remove();
+
+      const iframe = document.createElement("iframe");
+      iframe.id = "ifr_guardar";
+      iframe.style.display = "none";
+      iframe.src = url;
+
+      iframe.onload = () => {
+        setEstado("✅ Guardado: " + g + " / " + p, true);
+        setTimeout(leer, 300);
+      };
+
+      document.body.appendChild(iframe);
+    }
+
+    // al abrir
+    leer();
+  </script>
+</body>
+</html>
