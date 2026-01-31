@@ -2,30 +2,88 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Cambiar Marcador</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - Marcador</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        input {
+            width: 60px;
+            padding: 10px;
+            margin: 10px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
-    <h1>Cambiar Marcador</h1>
-    <label>Ganados: <input type="number" id="nuevoGanados" value="0"></label><br>
-    <label>Perdidos: <input type="number" id="nuevoPerdidos" value="0"></label><br>
-    <button onclick="actualizarMarcador()">Actualizar</button>
+
+    <div class="container">
+        <h1>Actualizar Marcador</h1>
+        
+        <div>
+            <label>Ganados: <input type="number" id="nuevoGanados" value="0"></label>
+        </div>
+        <div>
+            <label>Perdidos: <input type="number" id="nuevoPerdidos" value="0"></label>
+        </div>
+        
+        <br>
+        <button onclick="actualizarMarcador()">Actualizar Marcador</button>
+    </div>
 
     <script>
         function actualizarMarcador() {
-            let datos = {
-                ganados: document.getElementById("nuevoGanados").value,
-                perdidos: document.getElementById("nuevoPerdidos").value
-            };
+            // Obtenemos los valores de los inputs
+            let g = document.getElementById("nuevoGanados").value;
+            let p = document.getElementById("nuevoPerdidos").value;
 
-            fetch("https://krantor.rf.gd/Marcador/datos.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(datos)
+            // Construimos la URL con los parámetros GET para guardar.php
+            // Nota: Se usa la URL completa de tu servidor en InfinityFree
+            const url = `https://krantor.rf.gd/Marcador/guardar.php?ganados=${g}&perdidos=${p}`;
+
+            fetch(url)
+            .then(response => {
+                if (response.ok) {
+                    alert("¡Marcador actualizado con éxito!");
+                } else {
+                    alert("Error en el servidor: " + response.status);
+                }
             })
-            .then(response => response.json())
-            .then(data => alert(data.mensaje))
-            .catch(error => console.error("Error al actualizar marcador:", error));
+            .catch(error => {
+                console.error("Error al conectar con el servidor:", error);
+                alert("Error de conexión. Revisa que el servidor acepte CORS.");
+            });
         }
     </script>
+
 </body>
 </html>
