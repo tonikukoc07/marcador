@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Control Marcador</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background: #0b1220; color: white; }
+        .card { background: #111827; padding: 25px; border-radius: 15px; display: inline-block; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input { width: 80px; padding: 10px; font-size: 24px; margin: 10px; border-radius: 8px; border: none; text-align: center; }
+        button { width: 100%; padding: 15px; background: #2563eb; color: white; border: none; cursor: pointer; border-radius: 8px; font-weight: bold; font-size: 18px; }
+        label { display: block; margin-top: 10px; opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>MARCADOR</h1>
+        <label>GANADOS</label>
+        <input type="number" id="g" value="0">
+        <label>PERDIDOS</label>
+        <input type="number" id="p" value="0">
+        <button id="btnUpdate">ACTUALIZAR</button>
+        <p id="status"></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const conf = { databaseURL: "https://micontador-46836-default-rtdb.europe-west1.firebasedatabase.app/" };
+        const app = initializeApp(conf);
+        const db = getDatabase(app);
+        const marcadorRef = ref(db, 'marcador');
+
+        onValue(marcadorRef, (snap) => {
+            const data = snap.val();
+            if (data) {
+                document.getElementById('g').value = data.ganados;
+                document.getElementById('p').value = data.perdidos;
+            }
+        }, { onlyOnce: true });
+
+        document.getElementById("btnUpdate").onclick = () => {
+            set(marcadorRef, {
+                ganados: document.getElementById('g').value,
+                perdidos: document.getElementById('p').value
+            }).then(() => {
+                document.getElementById("status").textContent = "¡Actualizado! ✔️";
+                setTimeout(() => document.getElementById("status").textContent = "", 2000);
+            });
+        };
+    </script>
+</body>
+</html>
