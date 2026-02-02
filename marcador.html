@@ -1,45 +1,35 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            background: none; /* Elimina cualquier fondo */
-        }
-
-        #marcador {
-            font-family: Arial, sans-serif;
-            font-size: 24px;
-            padding: 10px;
-            border: 2px solid #000;
-            background-color: white; /* Fondo blanco solo para el marcador */
-            display: inline-block;
-            float: right; /* Alineación a la derecha */
-            text-align: right; /* Asegura que el texto también esté alineado */
-        }
-    </style>
+  <meta charset="UTF-8">
+  <style>
+    body { margin: 0; background: transparent; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    #marcador-container { text-align: center; }
+    .num { color: white; display: block; font-size: 80px; line-height: 1; font-family: Arial, sans-serif; font-weight: bold;
+      text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0px 0px 8px #000; }
+  </style>
 </head>
 <body>
-    <div id="marcador">
-        🏆 Ganados: <span id="ganados">0</span> | ❌ Perdidos: <span id="perdidos">0</span>
-    </div>
+  <div id="marcador-container">
+    <span id="ganados" class="num">0</span>
+    <span id="perdidos" class="num">0</span>
+  </div>
 
-    <script>
-        function actualizarMarcador() {
-            fetch("https://krantor.webcindario.com/datos.php")
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("ganados").innerText = data.ganados;
-                    document.getElementById("perdidos").innerText = data.perdidos;
-                })
-                .catch(error => console.error("Error al obtener datos:", error));
-        }
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Actualización cada 5 segundos
-        setInterval(actualizarMarcador, 5000);
-        actualizarMarcador(); // Primera actualización inmediata
-    </script>
+    const conf = { databaseURL: "https://micontador-46836-default-rtdb.europe-west1.firebasedatabase.app/" };
+    const app = initializeApp(conf);
+    const db = getDatabase(app);
+
+    onValue(ref(db, 'marcador'), (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        document.getElementById("ganados").textContent = data.ganados || "0";
+        document.getElementById("perdidos").textContent = data.perdidos || "0";
+      }
+    });
+  </script>
 </body>
 </html>
